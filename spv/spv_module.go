@@ -298,6 +298,7 @@ func NotifySmallCrossTx(tx core.Transaction) {
 
 //savePayloadInfo save and send spv perception
 func savePayloadInfo(elaTx core.Transaction, l *listener) {
+	OnTx2Failed(elaTx.Hash().String())
 	nr := bytes.NewReader(elaTx.Payload.Data(elaTx.PayloadVersion))
 	p := new(payload.TransferCrossChainAsset)
 	p.Deserialize(nr, elaTx.PayloadVersion)
@@ -666,6 +667,7 @@ func IsFailedElaTx(elaTx string) bool {
 }
 
 func onElaTxPacked(elaTx string) {
+	return //TODO now is test , will delete
 	failedMutex.Lock()
 	defer failedMutex.Unlock()
 	for height, txs := range failedTxList {
