@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/btcsuite/btcutil/base58"
 	"strings"
+
+	"github.com/btcsuite/btcutil/base58"
 
 	"github.com/elastos/Elastos.ELA.SideChain.ETH/common"
 	"github.com/elastos/Elastos.ELA.SideChain.ETH/core/vm/did"
@@ -42,7 +43,7 @@ func (j *operationDID) RequiredGas(evm *EVM, input []byte) uint64 {
 	return params.DIDBaseGasCost
 }
 
-func  checkPayloadSyntax(p *did.DIDPayload) error {
+func checkPayloadSyntax(p *did.DIDPayload) error {
 	// check proof
 	if p.Proof.VerificationMethod == "" {
 		return errors.New("proof Creator is nil")
@@ -59,23 +60,22 @@ func  checkPayloadSyntax(p *did.DIDPayload) error {
 		}
 
 		for _, pkInfo := range p.DIDDoc.PublicKey {
-			if  pkInfo.ID == ""{
+			if pkInfo.ID == "" {
 				return errors.New("check DIDDoc.PublicKey ID is empty")
 			}
-			if  pkInfo.Type != "ECDSAsecp256r1" {
-				return errors.New("check DIDDoc.PublicKey Type != ECDSAsecp256r1")
-			}
-			if  pkInfo.Controller == ""{
-				return  errors.New("check DIDDoc.PublicKey Controller is empty")
-			}
-			if  pkInfo.PublicKeyBase58 == ""{
-				return  errors.New("check DIDDoc.PublicKey PublicKeyBase58 is empty")
+			// if  pkInfo.Type != "ECDSAsecp256r1" {
+			// 	return errors.New("check DIDDoc.PublicKey Type != ECDSAsecp256r1")
+			// }
+			// if pkInfo.Controller == "" {
+			// 	return errors.New("check DIDDoc.PublicKey Controller is empty")
+			// }
+			if pkInfo.PublicKeyBase58 == "" {
+				return errors.New("check DIDDoc.PublicKey PublicKeyBase58 is empty")
 			}
 		}
 	}
 	return nil
 }
-
 
 func (j *operationDID) Run(evm *EVM, input []byte, gas uint64) ([]byte, error) {
 	//block height from context BlockNumber. config height address from config
@@ -113,7 +113,7 @@ func (j *operationDID) Run(evm *EVM, input []byte, gas uint64) ([]byte, error) {
 		}
 		p.DIDDoc = payloadInfo
 		// abnormal payload check
-		if err :=checkPayloadSyntax(p); err != nil {
+		if err := checkPayloadSyntax(p); err != nil {
 			log.Error("checkPayloadSyntax error", "error", err, "ID", p.DIDDoc.ID)
 			return false32Byte, err
 		}

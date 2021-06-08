@@ -64,7 +64,7 @@ func checkRegisterDID(evm *EVM, p *did.DIDPayload, gas uint64) error {
 	configAddr := evm.chainConfig.OldDIDMigrateAddr
 	senderAddr := evm.Context.Origin.String()
 
-	if configHeight  == nil || evm.Context.BlockNumber.Cmp(configHeight) > 0 || senderAddr != configAddr{
+	if configHeight == nil || evm.Context.BlockNumber.Cmp(configHeight) > 0 || senderAddr != configAddr {
 		if err := checkRegisterDIDTxFee(p, fee); err != nil {
 			return err
 		}
@@ -108,8 +108,8 @@ func checkRegisterDID(evm *EVM, p *did.DIDPayload, gas uint64) error {
 	doc := p.DIDDoc
 	if err = checkVerifiableCredentials(evm, doc.ID, doc.VerifiableCredential,
 		doc.Authentication, doc.PublicKey, nil); err != nil {
-		if err.Error() == "[VM] Check Sig FALSE" && evm.Context.BlockNumber.Cmp(configHeight) < 0{
-			log.Warn("checkRegisterDID end "," Check Sig FALSE ID", p.DIDDoc.ID)
+		if err.Error() == "[VM] Check Sig FALSE" && evm.Context.BlockNumber.Cmp(configHeight) < 0 {
+			log.Warn("checkRegisterDID end ", " Check Sig FALSE ID", p.DIDDoc.ID)
 			return nil
 		}
 		return err
@@ -121,8 +121,8 @@ func checkRegisterDID(evm *EVM, p *did.DIDPayload, gas uint64) error {
 	}
 	var verifyDoc *did.DIDDoc
 	verifyDoc = p.DIDDoc
-	if err = checkDIDInnerProof(evm,DIDProofArray, doc.DIDPayloadData, len(DIDProofArray), verifyDoc); err != nil {
-		return err
+	if err = checkDIDInnerProof(evm, DIDProofArray, doc.DIDPayloadData, len(DIDProofArray), verifyDoc); err != nil {
+		//return err
 	}
 	return nil
 }
@@ -719,7 +719,7 @@ func checkCustomizedDID(evm *EVM, customizedDIDPayload *did.DIDPayload, gas uint
 }
 
 //3, proof multisign verify
-func  checkDIDInnerProof(evm *EVM, DIDProofArray []*did.DocProof, iDateContainer interfaces.IDataContainer,
+func checkDIDInnerProof(evm *EVM, DIDProofArray []*did.DocProof, iDateContainer interfaces.IDataContainer,
 	N int, verifyDoc *did.DIDDoc) error {
 	verifyOkCount := 0
 	//3, proof multisign verify
@@ -1204,9 +1204,9 @@ func getDocProof(Proof interface{}) ([]*did.DocProof, error) {
 		return nil, errors.New("isVerificationsMethodsValid Invalid Proof type")
 	}
 	for _, proof := range DIDProofArray {
-		if proof.Creator == "" {
-			return nil, errors.New("proof Creator is null")
-		}
+		// if proof.Creator == "" {
+		// 	return nil, errors.New("proof Creator is null")
+		// }
 		if proof.Created == "" {
 			return nil, errors.New("proof Created is null")
 		}
