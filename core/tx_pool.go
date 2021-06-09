@@ -524,6 +524,11 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	isMigrateDID := false
 	signer := types.MakeSigner(pool.chainconfig, pool.chain.CurrentBlock().Number())
 	msg, err := tx.AsMessage(signer)
+
+	log.Info("migrate did tx size is too big", "err", err, "msg.From()", msg.From().String(),
+		"OldDIDMigrateAddr ", pool.chainconfig.OldDIDMigrateAddr, "OldDIDMigrateHeight",
+		pool.chainconfig.OldDIDMigrateHeight, "CurrentBlock", pool.chain.CurrentBlock().Number())
+
 	if err == nil && msg.From().String() == pool.chainconfig.OldDIDMigrateAddr &&
 		pool.chainconfig.OldDIDMigrateHeight != nil &&
 		pool.chain.CurrentBlock().Number().Cmp(pool.chainconfig.OldDIDMigrateHeight) <= 0 {
@@ -862,7 +867,7 @@ func (pool *TxPool) addTxsLocked(txs []*types.Transaction, local bool) ([]error,
 			to := *tx.To()
 			var blackAddr common.Address
 			if len(tx.Data()) == 32 && to == blackAddr {
-				txhash :=  hexutil.Encode(tx.Data())
+				txhash := hexutil.Encode(tx.Data())
 				fee, addr, output := spv.FindOutputFeeAndaddressByTxHash(txhash)
 				if addr != blackAddr {
 					if fee.Cmp(new(big.Int)) > 0 && output.Cmp(new(big.Int)) > 0 {
